@@ -1,43 +1,36 @@
-import globals from "globals";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import js from "@eslint/js";
-import { FlatCompat } from "@eslint/eslintrc";
+import js from '@eslint/js';
+import globals from 'globals';
+import { defineConfig } from 'eslint/config';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-    baseDirectory: __dirname,
-    recommendedConfig: js.configs.recommended,
-    allConfig: js.configs.all
-});
+export default defineConfig([
+	{
+		files: ['**/*.{js,mjs,cjs}'],
+		ignores: [
+			'tests/resources/**',
+			'**/jquery*.js',
+			'**/*tmp*.*',
+			'**/*tmp*/',
+			'node_modules/',
+		],		plugins: { js },
+		extends: ['js/recommended'],
+		languageOptions: {
+			globals: globals.node,
+			ecmaVersion: 'latest',
+			sourceType: 'module',
+		},
+		rules: {
+			indent: ['error', 'tab', {
+				SwitchCase: 1,
+			}],
 
-export default [{
-    ignores: ["tests/resources", "**/*tmp*.*", "eslint.config.js", "node_modules/"],
-}, ...compat.extends("eslint:recommended"), {
-    languageOptions: {
-        globals: {
-            ...globals.browser,
-            ...globals.node,
-            ...globals.commonjs,
-        },
+			'linebreak-style': ['error', 'unix'],
 
-        ecmaVersion: "latest",
-        sourceType: "module",
-    },
+			quotes: ['error', 'single', {
+				allowTemplateLiterals: true,
+			}],
 
-    rules: {
-        indent: ["error", "tab", {
-            SwitchCase: 1,
-        }],
-
-        "linebreak-style": ["error", "unix"],
-
-        quotes: ["error", "single", {
-            allowTemplateLiterals: true,
-        }],
-
-        semi: ["error", "always"],
-        "no-empty": ["error", { "allowEmptyCatch": true }],
-    },
-}];
+			semi: ['error', 'always'],
+			'no-empty': ['off'],
+		}
+	},
+]);
